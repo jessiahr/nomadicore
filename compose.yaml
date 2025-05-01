@@ -1,0 +1,100 @@
+version: '3.8'
+services:
+  kiwix:
+    image: ghcr.io/kiwix/kiwix-serve
+    ports:
+      - "4000:8080"
+    volumes:
+      - ./assets/kiwix/library:/data:ro
+    command: "*.zim"
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_server
+    restart: unless-stopped
+    environment:
+      OLLAMA_TIMEOUT: 300 # 5 minutes for slower hardware
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./assets/ollama/data:/root/.ollama
+      - ./assets/ollama/config:/ollama_config
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
+    tty: true 
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # - OLLAMA_API_KEY=your_api_key_here
+      - OLLAMA_API_TIMEOUT=300
+    volumes:
+      - ./assets/openwebui/data:/app/backend/data
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - ./assets/calibre-web/config:/config
+      - ./assets/calibre-web/library:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./assets/heimdall/config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+  tileserver:
+    image: maptiler/tileserver-gl
+    ports:
+      - "3001:8080"
+    volumes:
+      - ./assets/tileserver/data:/data
+    command: ["--config", "/data/config.json"]
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    container_name: jupyter
+    ports:
+      - 8888:8888
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: "docker"
+  obsidian:
+    image: lscr.io/linuxserver/obsidian:latest
+    container_name: obsidian
+    # security_opt:
+    #   - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./assets/obsidian/config:/config
+    ports:
+      - 3005:3000
+      - 3006:3001
+    # devices:
+    #   - /dev/dri:/dev/dri #optional
+    shm_size: "1gb"
+    restart: unless-stopped
+
+
+    
