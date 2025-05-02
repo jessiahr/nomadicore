@@ -11,6 +11,8 @@ def main_menu(ui):
             ui.menu_item('Services', lambda: ui.navigate.to("/"))
             ui.separator()
             ui.menu_item('CPU Stats', lambda: ui.navigate.to("/stats"))
+            ui.separator()
+            ui.menu_item('Manage Kiwix', lambda: ui.navigate.to("/manage/kiwix"))
 
 def init(fastapi_app: FastAPI):
 

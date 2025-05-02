@@ -13,9 +13,13 @@ Nomadicore is a versatile, containerized project designed to provide offline acc
   
 ## TODO
 - [X] UI for discovering and managing Kiwix `.zim` files
+- [X] CPU stats UI
 - [ ] Setup tool
   - [ ] Download default model
   - [ ] Dowload default `.zims`
+  - [ ] Show `.zim` size and mark if already downloaded
+  - [ ] Ability to restart services from UI
+- [ ] Authentication & ACL
 
 
 ## Getting Started
