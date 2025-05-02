@@ -1,7 +1,19 @@
-version: '3.8'
+
 services:
+  nomadicore:
+    build:
+      context: ./service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./assets/nomadicore/data:/app/data
+      - ./assets/kiwix/library:/app/data/kiwix/library
+    ports:
+      - "80:8000"
   kiwix:
     image: ghcr.io/kiwix/kiwix-serve
+    restart: unless-stopped
     ports:
       - "4000:8080"
     volumes:
@@ -59,7 +71,7 @@ services:
     volumes:
       - ./assets/heimdall/config:/config
     ports:
-      - 80:80
+      - 8080:80
       - 443:443
     restart: unless-stopped
   tileserver:
@@ -69,14 +81,16 @@ services:
     volumes:
       - ./assets/tileserver/data:/data
     command: ["--config", "/data/config.json"]
-  jupyter:
-    image: jupyter/datascience-notebook:latest
-    container_name: jupyter
-    ports:
-      - 8888:8888
+  jupyterlab:
+    container_name: jupyter-datascience
+    image: quay.io/jupyter/datascience-notebook:latest
+    restart: always
+    volumes:
+      - ./assets/jupyterlab/data:/home/jovyan/
     environment:
-      JUPYTER_ENABLE_LAB: "yes"
-      JUPYTER_TOKEN: "docker"
+      - JUPYTER_TOKEN=token
+    ports:
+      - '8888:8888'
   obsidian:
     image: lscr.io/linuxserver/obsidian:latest
     container_name: obsidian
