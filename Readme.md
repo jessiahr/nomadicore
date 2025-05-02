@@ -29,10 +29,10 @@ Nomadicore is a versatile, containerized project designed to provide offline acc
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/nomadicore.git
+   git clone https://github.com/jessiahr/nomadicore.git
    cd nomadicore
 2. Start the services using Docker Compose:
 ```bash
-docker-compose up -d
+docker compose up
 ```
 3. Navigate to `http://localhost:80` for the service directory
